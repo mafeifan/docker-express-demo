@@ -1,5 +1,5 @@
 FROM node:10.8.0-alpine
-MAINTAINER maf@shinetechchina.com
+MAINTAINER mafeifan@qq.com
 # 将根目录下的文件都copy到container（运行此镜像的容器）文件系统的app文件夹下
 ADD . /app/
 # 设置工作目录，下面的RUN命令会在工作目录执行
