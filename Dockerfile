@@ -6,6 +6,8 @@ ADD . /app/
 WORKDIR /app
 # 安装项目依赖包
 RUN npm install
+
+
 EXPOSE 3000
 # 容器启动时执行的命令，类似npm run start
 CMD ["npm", "start"]
