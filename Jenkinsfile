@@ -1,24 +1,17 @@
 pipeline {
-  agent {
-    docker {
-      image 'node:8.15.0-alpine'
+    agent { 
+      docker { 
+        image 'node:8.15.0-alpine' 
+      } 
     }
-
-  }
-  stages {
-    stage('Build') {
-      agent {
-        dockerfile {
-          filename 'Dockerfile'
+    environment {
+        HOME = '.'
+    }
+    stages {
+        stage('Build') { 
+            steps {
+                sh 'npm install' 
+            }
         }
-
-      }
-      steps {
-        sh 'npm install'
-      }
     }
-  }
-  environment {
-    HOME = '.'
-  }
 }
