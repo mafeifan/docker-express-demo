@@ -11,7 +11,8 @@ pipeline {
     stages { //定义构建的步骤
         stage('Build') { //步骤1，名称为Build，自定义即可
             steps { //Build步骤里的具体动作
-                sh 'npm install' 
+                sh 'npm install'
+                sh 'node -v'
             }
         }
         stage('Test') {
