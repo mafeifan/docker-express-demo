@@ -1,8 +1,8 @@
 pipeline {
-    agent { 
-      docker { 
-        image 'node:8.15.0-alpine' 
-      } 
+    agent {
+        docker {
+            image 'node:8.15.0-alpine'
+        }
     }
     // 避免 npm install 报权限问题
     environment {
@@ -17,12 +17,27 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'This is a test step'  
+                echo 'This is a test step'
             }
         }
         stage('Deploy') {
             steps {
-                echo 'This is a deploy step'    
+                echo 'This is a deploy step'
+            }
+        }
+    }
+
+    post {
+        always {
+            configFileProvider([configFile(fileId: 'email-groovy-template-cn', targetLocation: 'email.html', variable: 'content')]) {
+               script {
+                   template = readFile encoding: 'UTF-8', file: "${content}"
+                   emailext(
+                       to: "${email_to}",
+                       subject: "Job [${env.JOB_NAME}] - Status: ${currentBuild.result?: 'success'}",
+                       body: """${template}"""
+                   )
+               }
             }
         }
     }
