@@ -7,6 +7,7 @@ pipeline {
     // 避免 npm install 报权限问题
     environment {
         HOME = '.'
+        email_to='mafeifan@qq.com'
     }
     stages {
         //定义构建的步骤
