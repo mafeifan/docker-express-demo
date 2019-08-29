@@ -1,3 +1,5 @@
+// https://jenkins.io/zh/doc/book/pipeline/syntax
+
 pipeline {
     agent {
         // 在Docker容器里跑Job，跑完Jenkins会自动删除容器
@@ -9,6 +11,12 @@ pipeline {
     environment {
         HOME = '.'
         _EMAIL_TO='mafeifan@qq.com'
+    }
+    options {
+        // 不允许同时执行流水线, 防止同时访问共享资源等
+        disableConcurrentBuilds()
+        // 显示具体的构建流程时间戳
+        timestamps()
     }
     stages {
         // 只有修改 JS 或 CSS 资源文件才触发 Build 步骤
@@ -64,6 +72,4 @@ pipeline {
             }
         }
     }
-
-
 }
