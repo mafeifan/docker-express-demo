@@ -1,5 +1,6 @@
 pipeline {
     agent {
+        // 在Docker容器里跑Job，跑完Jenkins会自动删除容器
         docker {
             image 'node:8.15.0-alpine'
         }
@@ -10,10 +11,13 @@ pipeline {
         _EMAIL_TO='mafeifan@qq.com'
     }
     stages {
-        // 只有修改 JS 文件才触发 Build
+        // 只有修改 JS 或 CSS 资源文件才触发 Build 步骤
         stage('Build') {
             when {
-                changeset "**/*.js"
+                anyOf {
+                    changeset "**/*.js"
+                    changeset "**/*.css"
+                }
             }
             steps {
                 sh 'npm install'
