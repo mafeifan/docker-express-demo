@@ -25,6 +25,9 @@ pipeline {
             when {
                 branch 'master'
             }
+            steps {
+                echo 'master branch'
+            }
             post {
                 always {
                     configFileProvider([configFile(fileId: 'email-groovy-template-cn', targetLocation: 'email.html', variable: 'content')]) {
