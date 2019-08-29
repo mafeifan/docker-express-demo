@@ -10,23 +10,29 @@ pipeline {
         email_to='mafeifan@qq.com'
     }
     stages {
-        //定义构建的步骤
-        stage('Build') {
-            //步骤1，名称为Build，自定义即可
+        stage('Master') {
+            when {
+                branch 'master'
+            }
             steps {
-                //Build步骤里的具体动作
                 sh 'npm install'
                 sh 'node -v'
             }
         }
-        stage('Test') {
+        stage('Staging') {
+            when {
+                branch 'staging'
+            }
             steps {
-                echo 'This is a test step'
+                echo 'This is staging branch'
             }
         }
-        stage('Deploy') {
+        stage('Develop') {
+            when {
+                branch 'develop'
+            }
             steps {
-                echo 'This is a deploy step'
+                echo 'This is develop branch'
             }
         }
     }
