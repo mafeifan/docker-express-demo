@@ -1,2 +1,2 @@
-为练习daocloud和buddy.work而创建.
-和Jenkins
+为练习 daocloud 和 buddy.work 而创建.
+目前主要练习 Jenkins
