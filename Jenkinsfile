@@ -1,5 +1,3 @@
-// https://jenkins.io/zh/doc/book/pipeline/syntax
-
 pipeline {
     agent {
         // 在Docker容器里跑Job，跑完Jenkins会自动删除容器
@@ -35,6 +33,7 @@ pipeline {
         // 只有触发 Master 分支才发邮件
         stage('Master') {
             when {
+                beforeAgent true
                 branch 'master'
             }
             steps {
@@ -57,6 +56,7 @@ pipeline {
         }
         stage('Staging') {
             when {
+                beforeAgent true
                 branch 'staging'
             }
             steps {
@@ -65,6 +65,7 @@ pipeline {
         }
         stage('Develop') {
             when {
+                beforeAgent true
                 branch 'develop'
             }
             steps {
