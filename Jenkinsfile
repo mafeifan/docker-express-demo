@@ -7,16 +7,37 @@ pipeline {
     // 避免 npm install 报权限问题
     environment {
         HOME = '.'
-        email_to='mafeifan@qq.com'
+        _EMAIL_TO='mafeifan@qq.com'
     }
     stages {
-        stage('Master') {
+        // 只有修改 JS 文件才触发 Build
+        stage('Build') {
             when {
-                branch 'master'
+                changeset "**/*.js"
             }
             steps {
                 sh 'npm install'
                 sh 'node -v'
+            }
+        }
+        // 只有触发 Master 分支才发邮件
+        stage('Master') {
+            when {
+                branch 'master'
+            }
+            post {
+                always {
+                    configFileProvider([configFile(fileId: 'email-groovy-template-cn', targetLocation: 'email.html', variable: 'content')]) {
+                       script {
+                           template = readFile encoding: 'UTF-8', file: "${content}"
+                           emailext(
+                               to: "${env._EMAIL_TO}",
+                               subject: "Job [${env.JOB_NAME}] - Status: ${currentBuild.result?: 'success'}",
+                               body: """${template}"""
+                           )
+                       }
+                    }
+                }
             }
         }
         stage('Staging') {
@@ -37,18 +58,5 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            configFileProvider([configFile(fileId: 'email-groovy-template-cn', targetLocation: 'email.html', variable: 'content')]) {
-               script {
-                   template = readFile encoding: 'UTF-8', file: "${content}"
-                   emailext(
-                       to: "${email_to}",
-                       subject: "Job [${env.JOB_NAME}] - Status: ${currentBuild.result?: 'success'}",
-                       body: """${template}"""
-                   )
-               }
-            }
-        }
-    }
+
 }
