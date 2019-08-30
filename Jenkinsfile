@@ -11,6 +11,13 @@ pipeline {
         _EMAIL_TO = getEmailTo()
     }
     stages {
+        stage('Debug') {
+            steps {
+                sh 'node -v'
+                echo "email to: ${env._EMAIL_TO}"
+            }
+        }
+
         // 只有修改 JS 或 CSS 资源文件才触发 Build 步骤
         stage('Build') {
             when {
@@ -21,8 +28,6 @@ pipeline {
             }
             steps {
                 sh 'npm install'
-                sh 'node -v'
-                echo "email to: ${env._EMAIL_TO}"
             }
         }
         // 只有触发 Master 分支才发邮件
