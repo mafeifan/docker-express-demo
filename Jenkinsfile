@@ -1,29 +1,77 @@
 pipeline {
-    agent { 
-      docker { 
-        image 'node:8.15.0-alpine' 
-      } 
+    agent {
+        // 在Docker容器里跑Job，跑完Jenkins会自动删除容器
+        docker {
+            image 'node:8.15.0-alpine'
+        }
     }
     // 避免 npm install 报权限问题
     environment {
         HOME = '.'
+        _EMAIL_TO = getEmailTo()
     }
-    stages { //定义构建的步骤
-        stage('Build') { //步骤1，名称为Build，自定义即可
-            steps { //Build步骤里的具体动作
-                sh 'npm install'
+    stages {
+        stage('Debug') {
+            steps {
                 sh 'node -v'
+                echo "email to: ${env._EMAIL_TO}"
             }
         }
-        stage('Test') {
+
+        // 只有修改 JS 或 CSS 资源文件才触发 Build 步骤
+        stage('Build') {
+            when {
+                anyOf {
+                    changeset "**/*.js"
+                    changeset "**/*.css"
+                }
+            }
             steps {
-                echo 'This is a test step'  
+                sh 'npm install'
             }
         }
-        stage('Deploy') {
+        // 只有触发 Master 分支才发邮件
+        stage('Master') {
+            when {
+                branch 'master'
+            }
             steps {
-                echo 'This is a deploy step'    
+                echo 'master branch'
+            }
+            post {
+                always {
+                    configFileProvider([configFile(fileId: 'email-groovy-template-cn', targetLocation: 'email.html', variable: 'content')]) {
+                       script {
+                           template = readFile encoding: 'UTF-8', file: "${content}"
+                           emailext(
+                               to: "${env._EMAIL_TO}",
+                               subject: "Job [${env.JOB_NAME}] - Status: ${currentBuild.result?: 'success'}",
+                               body: """${template}"""
+                           )
+                       }
+                    }
+                }
+            }
+        }
+        stage('Staging') {
+            when {
+                branch 'staging'
+            }
+            steps {
+                echo 'This is staging branch'
+            }
+        }
+        stage('Develop') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                echo 'This is develop branch'
             }
         }
     }
+}
+
+def getEmailTo() {
+    return "${env.BRANCH_NAME}" == 'master' ? 'mafeifan@qq.com' : 'maf@shinetechchina.com'
 }
