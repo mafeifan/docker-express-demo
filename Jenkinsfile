@@ -39,20 +39,6 @@ pipeline {
             steps {
                 echo 'master branch'
             }
-            post {
-                always {
-                    configFileProvider([configFile(fileId: 'email-groovy-template-cn', targetLocation: 'email.html', variable: 'content')]) {
-                       script {
-                           template = readFile encoding: 'UTF-8', file: "${content}"
-                           emailext(
-                               to: "${env._EMAIL_TO}",
-                               subject: "Job [${env.JOB_NAME}] - Status: ${currentBuild.result?: 'success'}",
-                               body: """${template}"""
-                           )
-                       }
-                    }
-                }
-            }
         }
         stage('Staging') {
             when {
@@ -68,6 +54,20 @@ pipeline {
             }
             steps {
                 echo 'This is develop branch'
+            }
+        }
+    }
+    post {
+        always {
+            configFileProvider([configFile(fileId: 'email-groovy-template-cn', targetLocation: 'email.html', variable: 'content')]) {
+               script {
+                   template = readFile encoding: 'UTF-8', file: "${content}"
+                   emailext(
+                       to: "${env._EMAIL_TO}",
+                       subject: "Job [${env.JOB_NAME}] - Status: ${currentBuild.result?: 'success'}",
+                       body: """${template}"""
+                   )
+               }
             }
         }
     }
