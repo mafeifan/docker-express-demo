@@ -10,6 +10,17 @@ pipeline {
         HOME = '.'
         _EMAIL_TO = getEmailTo()
     }
+    options {
+        // 不允许同时执行流水线, 防止同时访问共享资源等
+        disableConcurrentBuilds()
+        // 显示具体的构建流程时间戳
+        timestamps()
+        // 只保留最近10次构建日志，还有其他参数
+        // https://stackoverflow.com/questions/39542485/how-to-write-pipeline-to-discard-old-builds/44155346
+        buildDiscarder(
+            logRotator(numToKeepStr: '10')
+        )
+    }
     stages {
         stage('Debug') {
             steps {
