@@ -22,6 +22,7 @@ pipeline {
             steps {
                 sh 'npm install'
                 sh 'node -v'
+                echo "email to: ${env._EMAIL_TO}"
             }
         }
         // 只有触发 Master 分支才发邮件
