@@ -13,6 +13,7 @@ pipeline {
     stages {
         stage('Debug') {
             steps {
+                sh "printenv"
                 sh 'node -v'
                 echo "email to: ${env._EMAIL_TO}"
             }
