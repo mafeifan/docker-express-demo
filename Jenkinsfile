@@ -8,7 +8,7 @@ pipeline {
     // 避免 npm install 报权限问题
     environment {
         HOME = '.'
-        _EMAIL_TO='mafeifan@qq.com'
+        _EMAIL_TO = getEmailTo()
     }
     stages {
         // 只有修改 JS 或 CSS 资源文件才触发 Build 步骤
@@ -64,6 +64,8 @@ pipeline {
             }
         }
     }
+}
 
-
+def getEmailTo() {
+    return ${env.BRANCH_NAME} === 'master' ? 'mafeifan@qq.com' : 'maf@shinetechchina.com'
 }
