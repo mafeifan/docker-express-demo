@@ -67,5 +67,5 @@ pipeline {
 }
 
 def getEmailTo() {
-    return env.BRANCH_NAME === 'master' ? 'mafeifan@qq.com' : 'maf@shinetechchina.com'
+    return "${env.BRANCH_NAME}" == 'master' ? 'mafeifan@qq.com' : 'maf@shinetechchina.com'
 }
