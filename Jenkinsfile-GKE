@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+    environment {
+        PROJECT_ID = 'ivory-strategy-313903'
+        CLUSTER_NAME = 'cluster-1'
+        CLUSTER_ZONE = 'asia-east2-c'
+        GKE_CREDENTIALS_ID = 'ivory-strategy-313903'
+        DOCKER_HUB_NAME = 'finleyma'
+        DOCKER_HUB_CREDENTIALS_ID = 'docker-hub-id'
+        DOCKER_HUB_PROJECT_NAME = 'express'
+    }
+    stages {
+        stage("Checkout code") {
+            steps {
+                checkout scm
+            }
+        }
+        stage("Build image") {
+            steps {
+                script {
+                    myapp = docker.build("${DOCKER_HUB_NAME}/${DOCKER_HUB_PROJECT_NAME}:${env.BUILD_ID}")
+                }
+            }
+        }
+        stage("Push image") {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'DOCKER_HUB_CREDENTIALS_ID') {
+                            myapp.push("latest")
+                            myapp.push("${env.BUILD_ID}")
+                    }
+                }
+            }
+        }        
+        stage('Deploy to GKE') {
+            steps{
+                sh "sed -i 's/express:latest/express:${env.BUILD_ID}/g' deployment.yaml"
+                step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.CLUSTER_ZONE, manifestPattern: 'deployment.yaml', credentialsId: env.GKE_CREDENTIALS_ID, verifyDeployments: true])
+            }
+        }
+    }    
+}
